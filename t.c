@@ -9,6 +9,7 @@ int main()
 { 
    uart_init();      
    uprintf("Welcome to ARM EXT2 Booter\n");
+   uprintf("testing testing \n");  // this was not found
 
    sdc_init();
    boot();
