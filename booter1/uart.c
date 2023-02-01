@@ -17,12 +17,16 @@ void uart_init()
   up->unit = 0;
 }
 
+//loop while data buffer is full -> or wait until data buffer is empty 
+//then write char to data buffer at up->base + DR (ofset to write to data buffer location in UART memory)
 void uputc(char c)
 {
   while ( *(up->base + FR) & 0x20 );  // while FR.bit5 != 0 ;
   *(up->base + DR) = (int)c;          // write c to DR  
 }
 
+//loop while the data buffer is empty -> or wait until data buffer is full 
+// return value from data buffer
 int ugetc()
 {
   while ( *(up->base + FR) & 0x10 ); // while FR.bit4 != 0 ;
@@ -35,9 +39,18 @@ void uprints(char *s)
     uputc(*s++);
 }
 
+// loop as long as character returned is not '\r' 
+// put *s back into UART 
+// increment *s pointer to next character
+// note: *s get current value at data buffer location on each loop. 
 int ugets(char *s)
 {
-  uprints("ugets(): under construction\n\r");
+  uprints("in ugets\n");
+  while ((*s = ugetc(up)) != '\r')
+  {
+    uputc(*s);
+    s++;
+  }
 }
 
 // write your own ugets(char s[ ]) to input a string (end by \r)
