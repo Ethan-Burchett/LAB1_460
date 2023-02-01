@@ -13,7 +13,11 @@ UART *up;
 // versatile_epb : UART0 at 0x101F1000
 
 char *ctable = "0123456789ABCDEF";
+<<<<<<< HEAD
 // int BASE = 10; // hard code 10 to make this work
+=======
+int BASE = 10; // hard code 10 to make this work
+>>>>>>> 48b37f9b1e0756c05229eb801fb9b8e87b7f8954
 
 void uart_init()
 {
@@ -71,6 +75,7 @@ int rpx(u32 x) // recursive put int in hex
     }
 }
 
+<<<<<<< HEAD
 int rps(char *x) // recursive put char
 {
     //this marches through the string printing one char each recursive step
@@ -81,6 +86,8 @@ int rps(char *x) // recursive put char
     }
 }
 
+=======
+>>>>>>> 48b37f9b1e0756c05229eb801fb9b8e87b7f8954
 int printu(u32 x) // unsigned integer
 {
     (x == 0) ? uputc('0') : rpu(x);
@@ -110,8 +117,11 @@ int printd(int x)
 
 int uprintf(char *fmt, ...)
 {
+<<<<<<< HEAD
     printf(" in uprintf \n");
 
+=======
+>>>>>>> 48b37f9b1e0756c05229eb801fb9b8e87b7f8954
     char *cp = fmt;
     int *ip = (int *)&fmt + 1;
     // Use cp to scan the format string for %TYPE symbols;
