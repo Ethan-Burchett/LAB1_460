@@ -19,7 +19,7 @@ void uart_init()
 
 //loop while data buffer is full -> or wait until data buffer is empty 
 //then write char to data buffer at up->base + DR (ofset to write to data buffer location in UART memory)
-void uputc(char c)
+void uputc(char c) // write c to data buffer
 {
   while ( *(up->base + FR) & 0x20 );  // while FR.bit5 != 0 ;
   *(up->base + DR) = (int)c;          // write c to DR  
@@ -50,6 +50,55 @@ int ugets(char *s)
   {
     uputc(*s);
     s++;
+  }
+}
+
+// prints, *printu*, printc(putchar) - ignore hex for now - implement later if we need it
+
+typedef unsigned int u32;
+
+char *ctable = "0123456789ABCDEF";
+
+
+int rpu(u32 x) // recursive put char
+{
+    char c;
+    if (x)
+    {
+        c = ctable[x % 10];
+        rpu(x / 10);
+        uputc(c);
+    }
+}
+
+int printu(u32 x)
+{
+    (x == 0) ? uputc('0') : rpu(x);
+}
+
+int uprintf(char *fmt, ...)
+{
+  char *cp = fmt;            // character pointer
+  int *ip = (int *)&fmt + 1; // integer pointer ( address of char * in the ... one memory address away from fmt string )
+  char type;
+
+  while (*cp != '\0')
+  {
+    if (*cp == '%')
+    {
+      cp++;
+      type = *cp;
+
+      // if (type == 's')
+      // {
+      //   uprints((char *)*ip);
+      // }
+      if (type == 'u')
+      {
+        printu(*ip);
+      }
+
+    }
   }
 }
 
