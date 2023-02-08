@@ -16,5 +16,5 @@ int main()
    uprintf("BACK FROM booter\n");
    ugetc();
 
-   go();
+   go(); // moves program counter to memory address where we loaded the operating system
 }

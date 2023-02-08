@@ -16,7 +16,8 @@ int main()
     ugets(name);
 
     uprintf("s=%s u=%u i=%d x=%x\n", "string", 128, -100, 256);
-    //uprintf("hello");
+    uprintf("hello\n");
+    
 
     if (strcmp(name, "quit") == 0)
       break;

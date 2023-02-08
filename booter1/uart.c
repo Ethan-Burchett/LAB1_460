@@ -2,13 +2,15 @@
 #define DR 0x00
 #define FR 0x18
 
-typedef struct uart{
-  char *base;           // base address
-  int   unit;           // UART ID number
-}UART;
+typedef struct uart
+{
+  char *base; // base address
+  int unit;   // UART ID number
+} UART;
 
 UART *up;
 
+#include "stdio.h"
 // versatile_epb : UART0 at 0x101F1000
 
 void uart_init()
@@ -17,35 +19,37 @@ void uart_init()
   up->unit = 0;
 }
 
-//loop while data buffer is full -> or wait until data buffer is empty 
-//then write char to data buffer at up->base + DR (ofset to write to data buffer location in UART memory)
+// loop while data buffer is full -> or wait until data buffer is empty
+// then write char to data buffer at up->base + DR (ofset to write to data buffer location in UART memory)
 void uputc(char c) // write c to data buffer
 {
-  while ( *(up->base + FR) & 0x20 );  // while FR.bit5 != 0 ;
-  *(up->base + DR) = (int)c;          // write c to DR  
+  while (*(up->base + FR) & 0x20)
+    ;                        // while FR.bit5 != 0 ;
+  *(up->base + DR) = (int)c; // write c to DR
 }
 
-//loop while the data buffer is empty -> or wait until data buffer is full 
-// return value from data buffer
+// loop while the data buffer is empty -> or wait until data buffer is full
+//  return value from data buffer
 int ugetc()
 {
-  while ( *(up->base + FR) & 0x10 ); // while FR.bit4 != 0 ;
-  return *(up->base + DR);           // DR has data
+  while (*(up->base + FR) & 0x10)
+    ;                      // while FR.bit4 != 0 ;
+  return *(up->base + DR); // DR has data
 }
 
 void uprints(char *s)
 {
-  while(*s)
+  while (*s)
     uputc(*s++);
 }
 
-// loop as long as character returned is not '\r' 
-// put *s back into UART 
+// loop as long as character returned is not '\r'
+// put *s back into UART
 // increment *s pointer to next character
-// note: *s get current value at data buffer location on each loop. 
+// note: *s get current value at data buffer location on each loop.
 int ugets(char *s)
 {
-  //uprints("in ugets\n");
+  // uprints("in ugets\n");
   while ((*s = ugetc(up)) != '\r')
   {
     uputc(*s);
@@ -59,26 +63,25 @@ typedef unsigned int u32;
 
 char *ctable = "0123456789ABCDEF";
 
-
 int rpu(u32 x) // recursive put char
 {
-    char c;
-    if (x)
-    {
-        c = ctable[x % 10];
-        rpu(x / 10);
-    }
-        uputc(c);
+  char c;
+  if (x)
+  {
+    c = ctable[x % 10];
+    rpu(x / 10);
+  }
+  uputc(c);
 }
 
 int printu(u32 x)
 {
-    (x == 0) ? uputc('0') : rpu(x);
+  (x == 0) ? uputc('0') : rpu(x);
 }
 
-int prints(char * s)
+int prints(char *s)
 {
-  while(*s)
+  while (*s)
   {
     uputc(*s);
     s++;
@@ -90,17 +93,18 @@ int rpx(int x)
   char c;
   if (x)
   {
-    c = ctable[x % x];
-    rpx(x/16);
+    c = ctable[x % 16];
+    rpx(x / 16);
   }
   uputc(c);
 }
 
 int printx(int x)
 {
+  // uprints("in printx\n");
   uputc('0');
   uputc('x');
-  if(x == 0)
+  if (x == 0)
   {
     uputc('0');
   }
@@ -108,12 +112,12 @@ int printx(int x)
   {
     rpx(x);
   }
-  kputc(' ');
+  uputc(' ');
 }
 
 int printi(int x)
 {
-  if( x < 0)
+  if (x < 0)
   {
     uputc('-');
     x = -x;
@@ -121,7 +125,7 @@ int printi(int x)
   printu(x);
 }
 
-int uprintf(char * fmt, ...)
+int uprintf(char *fmt, ...)
 {
   int *ip;
   char *cp;
@@ -130,10 +134,10 @@ int uprintf(char * fmt, ...)
 
   while (*cp)
   {
-    if(*cp != '%')
+    if (*cp != '%')
     {
       uputc(*cp);
-      if(*cp == '\n')
+      if (*cp == '\n')
       {
         uputc('\r');
       }
@@ -141,30 +145,31 @@ int uprintf(char * fmt, ...)
       continue;
     }
     cp++;
-    switch(*cp)
+    // uprints("-cp:");
+    // uputc(*cp);
+    // uprints("-\n");
+    switch (*cp)
     {
-      case 'c': uputc((char)*ip);     break;
-      case 's': prints((char)*ip);    break;
-      case 'd': printi(*ip);          break;
-      case 'u': printu(*ip);          break;
-      case 'x': printx(*ip);          break;
+    case 'c':
+      uputc((char)*ip);
+      break;
+    case 's':
+      prints((char*)*ip);
+      break;
+    case 'd':
+      printi(*ip);
+      break;
+    case 'u':
+      printu(*ip);
+      break;
+    case 'x':
+      printx(*ip);
+      break;
     }
     cp++;
     ip++;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 // int uprintf(char *fmt, ...)
 // {

@@ -1,5 +1,7 @@
 int boot()
 { 
+  uprintf("in boot()\n");
+  
   char   *name[2];  // name[0]="boot";   name[1]="eos";
   char   *address = 0x100000;  // EOS kernel loading address     
    
