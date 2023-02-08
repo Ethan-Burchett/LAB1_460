@@ -45,7 +45,7 @@ void uprints(char *s)
 // note: *s get current value at data buffer location on each loop. 
 int ugets(char *s)
 {
-  uprints("in ugets\n");
+  //uprints("in ugets\n");
   while ((*s = ugetc(up)) != '\r')
   {
     uputc(*s);
@@ -67,8 +67,8 @@ int rpu(u32 x) // recursive put char
     {
         c = ctable[x % 10];
         rpu(x / 10);
-        uputc(c);
     }
+        uputc(c);
 }
 
 int printu(u32 x)
@@ -76,31 +76,139 @@ int printu(u32 x)
     (x == 0) ? uputc('0') : rpu(x);
 }
 
-int uprintf(char *fmt, ...)
+int prints(char * s)
 {
-  char *cp = fmt;            // character pointer
-  int *ip = (int *)&fmt + 1; // integer pointer ( address of char * in the ... one memory address away from fmt string )
-  char type;
-
-  while (*cp != '\0')
+  while(*s)
   {
-    if (*cp == '%')
-    {
-      cp++;
-      type = *cp;
-
-      // if (type == 's')
-      // {
-      //   uprints((char *)*ip);
-      // }
-      if (type == 'u')
-      {
-        printu(*ip);
-      }
-
-    }
+    uputc(*s);
+    s++;
   }
 }
+
+int rpx(int x)
+{
+  char c;
+  if (x)
+  {
+    c = ctable[x % x];
+    rpx(x/16);
+  }
+  uputc(c);
+}
+
+int printx(int x)
+{
+  uputc('0');
+  uputc('x');
+  if(x == 0)
+  {
+    uputc('0');
+  }
+  else
+  {
+    rpx(x);
+  }
+  kputc(' ');
+}
+
+int printi(int x)
+{
+  if( x < 0)
+  {
+    uputc('-');
+    x = -x;
+  }
+  printu(x);
+}
+
+int uprintf(char * fmt, ...)
+{
+  int *ip;
+  char *cp;
+  cp = fmt;
+  ip = (int *)&fmt + 1;
+
+  while (*cp)
+  {
+    if(*cp != '%')
+    {
+      uputc(*cp);
+      if(*cp == '\n')
+      {
+        uputc('\r');
+      }
+      cp++;
+      continue;
+    }
+    cp++;
+    switch(*cp)
+    {
+      case 'c': uputc((char)*ip);     break;
+      case 's': prints((char)*ip);    break;
+      case 'd': printi(*ip);          break;
+      case 'u': printu(*ip);          break;
+      case 'x': printx(*ip);          break;
+    }
+    cp++;
+    ip++;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+// int uprintf(char *fmt, ...)
+// {
+//     uprints("in uprintf\n");
+//     char *cp = fmt;            // character pointer
+//     int *ip = (int *)&fmt + 1; // integer pointer ( address of char * in the ... one memory address away from fmt string )
+//     char type;
+
+//     while (*cp != '\0') // infinite loop
+//     {
+//         uprints("in while loop\n");
+//         if (*cp == '%')
+//         {
+//           cp++;
+//           type = *cp;
+
+//           // if (type == 's')
+//           // {
+//           //   uprints((char *)*ip);
+//           // }
+//           if (type == 'u')
+//           {
+//             printu(*ip);
+//           }
+//           ip++;
+//           cp++;
+//         }
+
+//         if (*cp == 92)
+//         {
+//           cp++;
+//           if (*cp == 'n')
+//           {
+//             cp++;
+//             uputc(13); // '\r'
+//           }
+//         }
+//         if (*cp != '%')
+//         {
+//           uputc(*cp);
+//         }
+//         cp++;
+//     }
+// }
 
 // write your own ugets(char s[ ]) to input a string (end by \r)
 // example: enter 12345\r ==> s[ ] = "12345";

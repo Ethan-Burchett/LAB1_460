@@ -6,22 +6,27 @@
 int main()
 {
   char name[128];
-  
-  uart_init();       
 
-  while(1){
-    
+  uart_init();
+
+  while (1)
+  {
     uprints("What's your name? ");
 
     ugets(name);
 
-    if ( strcmp(name, "quit")==0 )
-	break;
-    uprints("name = "); uprints(name); uprints("\n\r");
+    uprintf("s=%s u=%u i=%d x=%x\n", "string", 128, -100, 256);
+    //uprintf("hello");
+
+    if (strcmp(name, "quit") == 0)
+      break;
+    uprints("name = ");
+    uprints(name);
+    uprints("\n\r");
     ugetc();
+
   }
 
-  // Write YOUR OWN uprintf(char *fmt, ...) as in CS360 for  
+  // Write YOUR OWN uprintf(char *fmt, ...) as in CS360 for
   // uprintf("s=%s u=%u i=%d x=%x\n", "string", 128, -100, 256);
-
 }
